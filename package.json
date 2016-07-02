@@ -1,0 +1,29 @@
+{
+  "name": "webpack-fail",
+  "version": "1.0.0",
+  "description": "reproducing weird webpack compilations",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.12.0"
+  },
+  "devDependencies": {
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015-webpack": "^6.4.1",
+    "clean-webpack-plugin": "^0.1.9",
+    "cross-env": "^1.0.8",
+    "css-loader": "^0.23.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "html-webpack-plugin": "^2.22.0",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.0",
+    "webpack": "^2.1.0-beta.15",
+    "webpack-dev-server": "^2.1.0-beta.0"
+  },
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack --progress -p",
+    "start": "webpack-dev-server --inline --progress",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
