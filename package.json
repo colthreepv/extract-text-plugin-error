@@ -21,6 +21,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --progress -p",
+    "build-extract": "cross-env NODE_ENV=production EXTRACT=1 webpack --progress -p",
     "start": "webpack-dev-server --inline --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

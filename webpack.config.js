@@ -8,11 +8,11 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const env = process.env.NODE_ENV || 'development';
 const isProd = env === 'production';
+const extractText = process.env.EXTRACT != null;
 
 const extractSASS = new ExtractTextPlugin(isProd ? 'style-[hash].css' : 'style.css', { allChunks: true });
 
 const plugins = [
-  extractSASS,
   // outputs a chunk for all the javascript libraries: angular & co
   new webpack.optimize.CommonsChunkPlugin({
     name: 'vendor',
@@ -27,6 +27,7 @@ const plugins = [
   new HtmlWebpackPlugin({ filename: 'app1.html', chunks: ['app1', 'vendor'] }),
   new HtmlWebpackPlugin({ filename: 'app2.html', chunks: ['app2', 'vendor'] })
 ];
+if (extractText) plugins.push(extractSASS);
 
 if (isProd) { // add plugins in case we're in production
   // plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true, debug: false }));
@@ -34,6 +35,22 @@ if (isProd) { // add plugins in case we're in production
 }
 
 const browserLibs = ['axios'];
+
+const loaders = [
+  // es6 code
+  {
+    test: /.js$/,
+    loader: ['babel?cacheDirectory'],
+    exclude: /node_modules/,
+    cacheable: true
+  },
+  // static assets
+  { test: /\.(eot|woff|woff2|ttf|svg|png|jpg)$/, loader: 'url?limit=30000&name=[name]-[hash].[ext]' }
+];
+
+// scss - and only scss
+if (extractText) loaders.push({ test: /\.scss$/, loader: extractSASS.extract(['css?sourceMap', 'sass?sourceMap']) });
+else loaders.push({ test: /\.scss$/, loaders: ['css?sourceMap', 'sass?sourceMap'] });
 
 module.exports = {
   devtool: isProd ? 'module-source-map' : 'module-inline-source-map',
@@ -47,23 +64,7 @@ module.exports = {
     filename: isProd ? '[name]-[chunkhash].js' : '[name].js',
     sourceMapFilename: isProd ? '[name]-[chunkhash].map' : '[name].map'
   },
-  module: {
-    loaders: [
-      // es6 code
-      {
-        test: /.js$/,
-        loader: ['babel?cacheDirectory'],
-        exclude: /node_modules/,
-        cacheable: true
-      },
-      { test: /.html$/, loader: 'html', cacheable: true },
-      // scss - and only scss
-      { test: /\.scss$/, loader: extractSASS.extract(['css?sourceMap', 'sass?sourceMap']) },
-      // { test: /\.scss$/, loaders: ['style', 'css?sourceMap', 'sass?sourceMap'] },
-      // static assets
-      { test: /\.(eot|woff|woff2|ttf|svg|png|jpg)$/, loader: 'url?limit=30000&name=[name]-[hash].[ext]' }
-    ]
-  },
+  module: { loaders },
   plugins,
   sassLoader: {
     includePaths: [path.join(__dirname, 'node_modules')]

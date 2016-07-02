@@ -1,3 +1,4 @@
+import './standard-css.scss';
 import { createH, fillText } from './vendor';
 
 const bodyEl = document.body;
